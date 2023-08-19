@@ -1,11 +1,12 @@
 # input_module/epub.py
-
+from config.settings import TranslationSettings
 from ebook_parser.epub.epub_creator import EPUBCreator
 from ebook_parser.epub.epub_translation_writer import EPUBTranslationWriter
 from ebook_parser.epub.epub_translator import EPUBTextTranslator
 from ebook_parser.epub.export import EPUBExtractor
 from ebook_parser.epub.extract import TextExtractor
 from translation_module.Chinese import ChineseTranslator
+from translation_module.openai import OpenAITranslator
 
 
 def process_epub(epub_filename, source_lang, target_lang, provider_choice):
@@ -19,6 +20,11 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     # 定义翻译服务
     if provider_choice == '1':
         translator_service = ChineseTranslator()
+    elif provider_choice == '2':
+        selected_model = TranslationSettings.get_default_model()
+        prompt_template = TranslationSettings.get_default_prompt()
+        api_key = TranslationSettings.get_api_key()
+        translator_service = OpenAITranslator(selected_model, prompt_template, api_key)
     else:
         print("无效的翻译服务提供商选项。")
         return

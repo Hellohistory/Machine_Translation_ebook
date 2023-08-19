@@ -23,7 +23,11 @@ def main():
     # 选择翻译服务提供商
     print("请选择翻译服务提供商：")
     print("1. zhconv (繁体中文至简体中文)")
-    provider_choice = input("请输入选项（1）: ")
+    print("2. OpenAI (多语言翻译)")
+    provider_choice = input("请输入选项（1/2）: ")
+
+    # 调用 EPUB 处理函数
+    process_epub(epub_filename, source_lang, target_lang, provider_choice)
 
     # 调用 EPUB 处理函数
     process_epub(epub_filename, source_lang, target_lang, provider_choice)
