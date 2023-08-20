@@ -1,16 +1,36 @@
-# ebook_parser/epub/epub_translator.py
-
 import json
-import re
 
 from bs4 import BeautifulSoup, NavigableString
+
 from translation_module.translation_interface import TranslationInterface
 
+
+def estimate_tokens(text):
+    return len(text.split())
+
+def group_text_by_tokens(text_list, max_tokens):
+    grouped_text = []
+    current_group = []
+    current_tokens = 0
+    for text in text_list:
+        text_tokens = estimate_tokens(text)
+        if current_tokens + text_tokens < max_tokens:
+            current_group.append(text)
+            current_tokens += text_tokens
+        else:
+            grouped_text.append(current_group)
+            current_group = [text]
+            current_tokens = text_tokens
+    if current_group:
+        grouped_text.append(current_group)
+    return grouped_text
+
 class EPUBTextTranslator:
-    def __init__(self, json_input_path, json_output_path, translator: TranslationInterface):
+    def __init__(self, json_input_path, json_output_path, translator: TranslationInterface, max_tokens_for_model):
         self.json_input_path = json_input_path
         self.json_output_path = json_output_path
         self.translator = translator
+        self.max_tokens_for_model = max_tokens_for_model
 
     def translate_text(self, source_lang, target_lang):
         with open(self.json_input_path, 'r', encoding='utf-8') as json_file:
@@ -24,28 +44,32 @@ class EPUBTextTranslator:
             # 解析 HTML 内容
             soup = BeautifulSoup(html_content, 'html.parser')
 
-            # 遍历所有的可导航字符串，逐个翻译
-            for text_node in soup.find_all(text=True):
-                if isinstance(text_node, NavigableString) and text_node.strip():
-                    # 使用正则表达式分割句子，保留分隔符
-                    sentences = re.split(r'(\s*[.!?]\s*)', text_node.strip())
+            # 获取所有文本节点
+            text_nodes = [text_node for text_node in soup.find_all(text=True) if isinstance(text_node, NavigableString) and text_node.strip()]
 
-                    # 逐个翻译句子
-                    translated_sentences = []
-                    for i in range(0, len(sentences) - 1, 2):
-                        sentence = sentences[i] + sentences[i + 1]
-                        # 检查句子是否包含字母或数字
-                        if sentence.strip() and any(char.isalnum() for char in sentence):
-                            print("Translating sentence:", sentence)  # 打印句子
-                            translated_sentence = self.translator.translate(sentence, source_lang=source_lang,
-                                                                            target_lang=target_lang)
-                            print("Translated sentence:", translated_sentence)  # 打印翻译后的句子
-                            translated_sentences.append(translated_sentence)
-                        else:
-                            translated_sentences.append(sentence)  # 保留未翻译的标点或空白字符
+            # 将文本节点组合为符合最大token限制的组
+            text_groups = group_text_by_tokens(text_nodes, self.max_tokens_for_model)
 
-                    translated_text = ''.join(translated_sentences)
-                    text_node.replace_with(translated_text)
+            # 遍历文本组并翻译
+            for group in text_groups:
+                # 准备整体文本和位置信息
+                text_to_translate = ''
+                positions = []
+                start_pos = 0
+                for text_node in group:
+                    text_length = len(text_node)
+                    text_to_translate += text_node
+                    positions.append((start_pos, start_pos + text_length))
+                    start_pos += text_length
+
+                # 翻译整体文本
+                translated_text = self.translator.translate(text_to_translate, source_lang, target_lang)
+                print("Translated sentence:", translated_text)  # 打印翻译后的句子
+
+                # 用翻译后的文本替换原始节点
+                for original_text_node, (start, end) in zip(group, positions):
+                    translated_part = translated_text[start:end]
+                    original_text_node.replace_with(translated_part)
 
             # 保存翻译后的 HTML 内容和标签
             translated_data.append({
@@ -63,5 +87,6 @@ class EPUBTextTranslator:
 # from translation_services.custom_translator import convert_traditional_to_simplified
 # translator = EPUBTextTranslator(json_input_path='extracted_text.json',
 #                                 json_output_path='translated_text.json',
-#                                 translation_function=convert_traditional_to_simplified)
-# translator.translate_text()
+#                                 translation_function=convert_traditional_to_simplified, max_tokens_for_model=4096)
+# translator.translate_text('zh', 'en')
+

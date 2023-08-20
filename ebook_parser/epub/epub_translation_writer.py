@@ -18,7 +18,8 @@ class EPUBTranslationWriter:
         for item in translated_data:
             tag = item['tag']
             html_content = item['html_content']
-            filename = tag.split('_')[0]  # 从标签中解析文件名
+            filename, p_index_tag = tag.rsplit("_p", 1)
+            p_index = int(p_index_tag)  # 将字符串转换为整数
             file_path = os.path.join(self.html_folder, filename)
 
             if file_path not in updated_files:  # 仅在首次访问文件时解析 HTML
@@ -26,8 +27,11 @@ class EPUBTranslationWriter:
                     soup = BeautifulSoup(file, 'html.parser')
                     updated_files[file_path] = soup
 
-            p_index = int(tag.split('_')[1][1:])  # 从标签中获取段落索引
             soup = updated_files[file_path]
+            original_paragraph = soup.find_all('p')[p_index]
+            new_paragraph = BeautifulSoup(html_content, 'html.parser').p
+            original_paragraph.replace_with(new_paragraph)
+
 
             original_paragraph = soup.find_all('p')[p_index]
             new_paragraph = BeautifulSoup(html_content, 'html.parser').p

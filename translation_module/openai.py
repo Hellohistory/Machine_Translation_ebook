@@ -7,15 +7,18 @@ from translation_module.translation_interface import TranslationInterface
 
 
 class OpenAITranslator(TranslationInterface):
-    def __init__(self, selected_model, prompt_template, api_key, api_proxy=None):
+    def __init__(self, selected_model, prompt_template, api_key, max_tokens_for_model, api_proxy=None):
         self.api_key = api_key
         self.api_proxy = api_proxy
         self.selected_model = selected_model
         self.prompt_template = prompt_template
-        openai.api_key = api_key  # 如果你仍然打算在没有代理的情况下使用openai库，你可能还需要设置这个属性
+        self.max_tokens_for_model = max_tokens_for_model
+        self.requests_and_responses = []  # 用于存储所有请求和响应的列表
+        openai.api_key = api_key  # 如果你仍然打算在没有代理的情况下使用 openai 库，你可能还需要设置这个属性
 
         if api_proxy:
             print("正在使用OpenAI API 代理，代理地址为:", self.api_proxy)
+
 
     def translate(self, text, source_lang, target_lang):
         # 使用设置中的prompt模板
@@ -26,6 +29,10 @@ class OpenAITranslator(TranslationInterface):
 
         translated_text = response['choices'][0]['message']['content']
         return translated_text
+
+    def save_json(self, filename):
+        with open(filename, 'w', encoding='utf-8') as json_file:
+            json.dump(self.requests_and_responses, json_file, ensure_ascii=False, indent=4)
 
     def call_openai(self, prompt):
         # Prepare the request payload
@@ -50,23 +57,26 @@ class OpenAITranslator(TranslationInterface):
                 messages=[{"role": "user", "content": prompt}]
             )
 
-        # Save the request and response data
-        self.save_json(request_payload, 'utils/request.json')
-        self.save_json(response_data, 'utils/response.json')
+        # 将请求和响应保存到列表中
+        self.requests_and_responses.append({
+            "request": request_payload,
+            "response": response_data
+        })
 
+        # 返回响应数据
         return response_data
 
-    @staticmethod
-    def save_json(data, filename):
-        with open(filename, 'w', encoding='utf-8') as json_file:
-            json.dump(data, json_file, ensure_ascii=False, indent=4)
+    def save_requests_and_responses(self):
+        self.save_json('utils/requests_and_responses.json')
 
 
 # 从设置中获取所需的值
 selected_model = TranslationSettings.get_default_model()
 prompt_template = TranslationSettings.get_default_prompt()
 api_key = TranslationSettings.get_api_key()
-api_proxy = TranslationSettings.get_api_proxy()  # 预留从设置中获取API代理的位置
+max_tokens_for_model = TranslationSettings.get_max_tokens_for_model(selected_model)  # 获取最大token数
+api_proxy = TranslationSettings.get_api_proxy()
 
 # 初始化翻译器
-translator = OpenAITranslator(selected_model, prompt_template, api_key, api_proxy=api_proxy)
+translator = OpenAITranslator(selected_model, prompt_template, api_key, max_tokens_for_model, api_proxy)  # 这里要传递 max_tokens_for_model
+
