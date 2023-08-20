@@ -1,7 +1,9 @@
 # ebook_parser/epub/epub_translator.py
 
 import json
-from bs4 import BeautifulSoup
+import re
+
+from bs4 import BeautifulSoup, NavigableString
 from translation_module.translation_interface import TranslationInterface
 
 class EPUBTextTranslator:
@@ -19,14 +21,36 @@ class EPUBTextTranslator:
             html_content = item['html_content']
             tag = item['tag']
 
-            # 使用传入的翻译服务进行翻译
-            translated_html_content = self.translator.translate(html_content, source_lang=source_lang,
-                                                                target_lang=target_lang)
+            # 解析 HTML 内容
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            # 遍历所有的可导航字符串，逐个翻译
+            for text_node in soup.find_all(text=True):
+                if isinstance(text_node, NavigableString) and text_node.strip():
+                    # 使用正则表达式分割句子，保留分隔符
+                    sentences = re.split(r'(\s*[.!?]\s*)', text_node.strip())
+
+                    # 逐个翻译句子
+                    translated_sentences = []
+                    for i in range(0, len(sentences) - 1, 2):
+                        sentence = sentences[i] + sentences[i + 1]
+                        # 检查句子是否包含字母或数字
+                        if sentence.strip() and any(char.isalnum() for char in sentence):
+                            print("Translating sentence:", sentence)  # 打印句子
+                            translated_sentence = self.translator.translate(sentence, source_lang=source_lang,
+                                                                            target_lang=target_lang)
+                            print("Translated sentence:", translated_sentence)  # 打印翻译后的句子
+                            translated_sentences.append(translated_sentence)
+                        else:
+                            translated_sentences.append(sentence)  # 保留未翻译的标点或空白字符
+
+                    translated_text = ''.join(translated_sentences)
+                    text_node.replace_with(translated_text)
 
             # 保存翻译后的 HTML 内容和标签
             translated_data.append({
                 'tag': tag,
-                'html_content': translated_html_content
+                'html_content': str(soup)
             })
 
         # 将翻译后的文本和标签保存到新的 JSON 文件中

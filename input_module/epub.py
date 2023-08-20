@@ -24,7 +24,8 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
         selected_model = TranslationSettings.get_default_model()
         prompt_template = TranslationSettings.get_default_prompt()
         api_key = TranslationSettings.get_api_key()
-        translator_service = OpenAITranslator(selected_model, prompt_template, api_key)
+        api_proxy = TranslationSettings.get_api_proxy()
+        translator_service = OpenAITranslator(selected_model, prompt_template, api_key, api_proxy=api_proxy)
     elif provider_choice == '3':  # 添加新的有道翻译服务选项
         translator_service = YoudaoTranslator()
     else:

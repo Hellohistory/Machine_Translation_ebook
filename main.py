@@ -14,8 +14,8 @@ def main():
         print("指定的 EPUB 文件不存在。")
         return
 
-    source_lang = input("请输入源语言（例如：zh-tw）: ")
-    target_lang = "zh-CHS"
+    source_lang = "英语"
+    target_lang = "简体中文"
 
     # 选择翻译服务提供商
     print("请选择翻译服务提供商：")

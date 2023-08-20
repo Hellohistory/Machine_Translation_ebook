@@ -8,8 +8,8 @@ from translation_module.translation_interface import TranslationInterface
 
 
 class YoudaoTranslator(TranslationInterface):
-    APP_KEY = '750174220e069ba5'
-    APP_SECRET = 'YliV83XntiO5HPl5BLz1Kr3DpGKwP2m5'
+    APP_KEY = ''
+    APP_SECRET = ''
 
     def add_auth_params(self, data, text):
         salt = str(uuid.uuid1())
