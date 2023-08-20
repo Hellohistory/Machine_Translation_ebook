@@ -10,7 +10,6 @@ class EPUBTextTranslator:
         self.json_output_path = json_output_path
         self.translator = translator
 
-
     def translate_text(self, source_lang, target_lang):
         with open(self.json_input_path, 'r', encoding='utf-8') as json_file:
             text_data = json.load(json_file)
@@ -20,22 +19,14 @@ class EPUBTextTranslator:
             html_content = item['html_content']
             tag = item['tag']
 
-            # 解析 HTML 内容
-            soup = BeautifulSoup(html_content, 'html.parser')
-            original_text = soup.get_text()
-
             # 使用传入的翻译服务进行翻译
-            translated_text = self.translator.translate(original_text, source_lang=source_lang, target_lang=target_lang)
-
-            # 替换原始文本为翻译后的文本
-            for text_node in soup.find_all(text=True):
-                if text_node.strip():
-                    text_node.replace_with(translated_text)
+            translated_html_content = self.translator.translate(html_content, source_lang=source_lang,
+                                                                target_lang=target_lang)
 
             # 保存翻译后的 HTML 内容和标签
             translated_data.append({
                 'tag': tag,
-                'html_content': str(soup)
+                'html_content': translated_html_content
             })
 
         # 将翻译后的文本和标签保存到新的 JSON 文件中

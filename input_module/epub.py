@@ -6,6 +6,7 @@ from ebook_parser.epub.epub_translator import EPUBTextTranslator
 from ebook_parser.epub.export import EPUBExtractor
 from ebook_parser.epub.extract import TextExtractor
 from translation_module.Chinese import ChineseTranslator
+from translation_module.Youdao import YoudaoTranslator
 from translation_module.openai import OpenAITranslator
 
 
@@ -17,7 +18,6 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     json_output_path = r'Temporary Files\translated_text.json'
     new_epub_path = 'new_translated_book.epub'
 
-    # 定义翻译服务
     if provider_choice == '1':
         translator_service = ChineseTranslator()
     elif provider_choice == '2':
@@ -25,6 +25,8 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
         prompt_template = TranslationSettings.get_default_prompt()
         api_key = TranslationSettings.get_api_key()
         translator_service = OpenAITranslator(selected_model, prompt_template, api_key)
+    elif provider_choice == '3':  # 添加新的有道翻译服务选项
+        translator_service = YoudaoTranslator()
     else:
         print("无效的翻译服务提供商选项。")
         return
