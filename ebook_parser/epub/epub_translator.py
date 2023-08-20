@@ -1,36 +1,14 @@
 import json
-
 from bs4 import BeautifulSoup, NavigableString
-
 from translation_module.translation_interface import TranslationInterface
-
-
-def estimate_tokens(text):
-    return len(text.split())
-
-def group_text_by_tokens(text_list, max_tokens):
-    grouped_text = []
-    current_group = []
-    current_tokens = 0
-    for text in text_list:
-        text_tokens = estimate_tokens(text)
-        if current_tokens + text_tokens < max_tokens:
-            current_group.append(text)
-            current_tokens += text_tokens
-        else:
-            grouped_text.append(current_group)
-            current_group = [text]
-            current_tokens = text_tokens
-    if current_group:
-        grouped_text.append(current_group)
-    return grouped_text
+from ebook_parser.text_processing import TextTokenizer  # 导入新的 TextTokenizer 类
 
 class EPUBTextTranslator:
     def __init__(self, json_input_path, json_output_path, translator: TranslationInterface, max_tokens_for_model):
         self.json_input_path = json_input_path
         self.json_output_path = json_output_path
         self.translator = translator
-        self.max_tokens_for_model = max_tokens_for_model
+        self.tokenizer = TextTokenizer(max_tokens_for_model)
 
     def translate_text(self, source_lang, target_lang):
         with open(self.json_input_path, 'r', encoding='utf-8') as json_file:
@@ -48,7 +26,7 @@ class EPUBTextTranslator:
             text_nodes = [text_node for text_node in soup.find_all(text=True) if isinstance(text_node, NavigableString) and text_node.strip()]
 
             # 将文本节点组合为符合最大token限制的组
-            text_groups = group_text_by_tokens(text_nodes, self.max_tokens_for_model)
+            text_groups = self.tokenizer.group_text_by_tokens(text_nodes)  # 使用 TextTokenizer 对象进行分组
 
             # 遍历文本组并翻译
             for group in text_groups:
