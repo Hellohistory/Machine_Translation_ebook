@@ -1,7 +1,10 @@
 import json
+import time
 from bs4 import BeautifulSoup, NavigableString
+
+from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
-from ebook_parser.text_processing import TextTokenizer  # 导入新的 TextTokenizer 类
+from ebook_parser.text_processing import TextTokenizer
 
 class EPUBTextTranslator:
     def __init__(self, json_input_path, json_output_path, translator: TranslationInterface, max_tokens_for_model):
@@ -9,6 +12,19 @@ class EPUBTextTranslator:
         self.json_output_path = json_output_path
         self.translator = translator
         self.tokenizer = TextTokenizer(max_tokens_for_model)
+        self.max_requests_per_minute = TranslationSettings.get_max_requests_per_minute()  # 从设置中获取最大请求次数
+        self.requests_count = 0
+        self.start_time = time.time()
+
+    def _check_rate_limit(self):
+        if self.requests_count >= self.max_requests_per_minute:
+            elapsed_time = time.time() - self.start_time
+            if elapsed_time < 60:
+                sleep_time = 60 - elapsed_time
+                print(f"达到速率限制，将等待 {sleep_time:.2f} 秒")
+                time.sleep(sleep_time)
+            self.requests_count = 0
+            self.start_time = time.time()
 
     def translate_text(self, source_lang, target_lang):
         with open(self.json_input_path, 'r', encoding='utf-8') as json_file:
@@ -40,8 +56,9 @@ class EPUBTextTranslator:
                     positions.append((start_pos, start_pos + text_length))
                     start_pos += text_length
 
-                # 翻译整体文本
+                self._check_rate_limit()
                 translated_text = self.translator.translate(text_to_translate, source_lang, target_lang)
+                self.requests_count += 1
                 print("Translated sentence:", translated_text)  # 打印翻译后的句子
 
                 # 用翻译后的文本替换原始节点

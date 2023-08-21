@@ -19,7 +19,9 @@ class TranslationSettings:
     DEFAULT_PROMPT = "请将下面的文本从{source_lang}翻译为{target_lang}: {sentence}"
 
     # OpenAI的API密钥
-    OPENAI_API_KEY = "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"
+    OPENAI_API_KEY = ""
+
+    MAX_REQUESTS_PER_MINUTE = 50  # 你可以根据需要设置此值
 
     # OpenAI的API代理地址
     OPENAI_API_PROXY = "https://api.openai-proxy.com"  # 你可以在此设置代理URL，或者保留为None以便在其他地方进行配置
@@ -47,3 +49,7 @@ class TranslationSettings:
     @staticmethod
     def get_max_tokens_for_model(model_name):
         return TranslationSettings.MAX_TOKENS_FOR_MODELS.get(model_name, None)
+
+    @staticmethod
+    def get_max_requests_per_minute():
+        return TranslationSettings.MAX_REQUESTS_PER_MINUTE
