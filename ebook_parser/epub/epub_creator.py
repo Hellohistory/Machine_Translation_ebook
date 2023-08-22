@@ -1,8 +1,8 @@
-# ebook_parser/epub/epub_creator.py
-
+import logging
 from ebooklib import epub
 from lxml import etree
 import os
+
 
 class EPUBCreator:
     def __init__(self, epub_filename, translated_html_folder, new_epub_path):
@@ -11,6 +11,8 @@ class EPUBCreator:
         self.new_epub_path = new_epub_path
 
     def create_new_epub(self):
+        logging.info(f"开始创建新的 EPUB 文件: {self.new_epub_path}")
+
         # 读取原始 EPUB 文件
         book = epub.read_epub(self.epub_filename)
 
@@ -23,18 +25,19 @@ class EPUBCreator:
                     with open(translated_html_path, 'r', encoding='utf-8') as html_file:
                         translated_html_content = html_file.read()
 
-                    # 使用 lxml 来解析并重新序列化 HTML
+                    # 解析并重新序列化 HTML
                     parser = etree.XMLParser(recover=True)
                     html_tree = etree.fromstring(translated_html_content.encode('utf-8'), parser=parser)
                     translated_html_content_fixed = etree.tostring(html_tree, encoding='utf-8').decode('utf-8')
 
                     # 替换章节内容
                     item.set_content(translated_html_content_fixed)
+                    logging.info(f"替换章节 {chapter_name} 的内容")
 
         # 写入新的 EPUB 文件
         epub.write_epub(self.new_epub_path, book)
 
-        print(f"新 EPUB 文件已创建在 {self.new_epub_path}")
+        logging.info(f"新 EPUB 文件已创建在 {self.new_epub_path}")
 
 # 以下代码可用于测试
 # creator = EPUBCreator(epub_filename='path/to/epub',
