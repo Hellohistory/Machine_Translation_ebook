@@ -2,12 +2,14 @@
 
 import json
 import time
-import logging
 from bs4 import BeautifulSoup, NavigableString
 
 from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
 from ebook_parser.text_processing import TextTokenizer
+from config.logger_config import setup_logger
+
+logger = setup_logger()
 
 class EPUBTextTranslator:
     def __init__(self, json_input_path, json_output_path, translator: TranslationInterface, max_tokens_for_model):
@@ -24,7 +26,7 @@ class EPUBTextTranslator:
             elapsed_time = time.time() - self.start_time
             if elapsed_time < 60:
                 sleep_time = 60 - elapsed_time
-                logging.info(f"达到速率限制，将等待 {sleep_time:.2f} 秒")
+                logger.info(f"达到速率限制，将等待 {sleep_time:.2f} 秒")
                 time.sleep(sleep_time)
             self.requests_count = 0
             self.start_time = time.time()
@@ -37,7 +39,7 @@ class EPUBTextTranslator:
         translated_data = []
         success_count = 0
 
-        logging.info(f"开始翻译，共有 {len(text_data)} 项文本")
+        logger.info(f"开始翻译，共有 {len(text_data)} 项文本")
         for item in text_data:
             html_content = item['html_content']
 
@@ -50,7 +52,7 @@ class EPUBTextTranslator:
             # 将文本节点组合为符合最大token限制的组
             text_groups = self.tokenizer.group_text_by_tokens(text_nodes)  # 使用 TextTokenizer 对象进行分组
 
-            logging.info(f"共有 {len(text_groups)} 组文本进行翻译")
+            logger.info(f"共有 {len(text_groups)} 组文本进行翻译")
             for group in text_groups:
                 # 准备整体文本和位置信息
                 text_to_translate = ''
@@ -68,7 +70,7 @@ class EPUBTextTranslator:
                     success_count += 1
                     print("Translated sentence:", translated_text)  # 打印翻译后的句子
                 except Exception as e:  # 您可以替换为可能的具体异常类型
-                    logging.error(f"翻译失败: {e}")
+                    logger.error(f"翻译失败: {e}")
 
                 # 用翻译后的文本替换原始节点
                 for original_text_node, (start, end) in zip(group, positions):
@@ -85,7 +87,7 @@ class EPUBTextTranslator:
         with open(self.json_output_path, 'w', encoding='utf-8') as json_file:
             json.dump(translated_data, json_file, ensure_ascii=False, indent=4)
 
-        logging.info(f"已将翻译后的文本保存到 {self.json_output_path}，成功翻译 {success_count} 组文本")
+        logger.info(f"已将翻译后的文本保存到 {self.json_output_path}，成功翻译 {success_count} 组文本")
 
 
 # 以下代码可用于测试，你可以从 translation_services 导入所需的翻译函数

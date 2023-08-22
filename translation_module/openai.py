@@ -1,13 +1,15 @@
 import json
 import openai
 import requests
-import logging
+from config.logger_config import setup_logger
+
 
 from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
 
 # 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = setup_logger()
+
 
 
 class OpenAITranslator(TranslationInterface):
@@ -21,14 +23,14 @@ class OpenAITranslator(TranslationInterface):
         openai.api_key = api_key
 
         if api_proxy:
-            logging.info(f"正在使用OpenAI API 代理，代理地址为: {self.api_proxy}")
+            logger.info(f"正在使用OpenAI API 代理，代理地址为: {self.api_proxy}")
 
     def translate(self, text, source_lang, target_lang):
-        logging.info("开始翻译文本")
+        logger.info("开始翻译文本")
         prompt = self.prompt_template.format(sentence=text, source_lang=source_lang, target_lang=target_lang)
         response = self.call_openai(prompt)
         translated_text = response['choices'][0]['message']['content']
-        logging.info("完成翻译文本")
+        logger.info("完成翻译文本")
         return translated_text
 
     def save_json(self, filename):
@@ -36,7 +38,7 @@ class OpenAITranslator(TranslationInterface):
             json.dump(self.requests_and_responses, json_file, ensure_ascii=False, indent=4)
 
     def call_openai(self, prompt):
-        logging.info(f"准备调用 OpenAI API，模型为: {self.selected_model}")
+        logger.info(f"准备调用 OpenAI API，模型为: {self.selected_model}")
         request_payload = {
             "model": self.selected_model,
             "messages": [{"role": "user", "content": prompt}]
@@ -49,7 +51,7 @@ class OpenAITranslator(TranslationInterface):
             }
             response = requests.post(f"{self.api_proxy}/v1/chat/completions", json=request_payload, headers=headers)
             if response.status_code != 200:
-                logging.error(f"调用 OpenAI API 出错: {response.text}")
+                logger.error(f"调用 OpenAI API 出错: {response.text}")
                 raise Exception(response.text)
             response_data = response.json()
         else:
@@ -63,7 +65,7 @@ class OpenAITranslator(TranslationInterface):
             "response": response_data
         })
 
-        logging.info(f"成功调用 OpenAI API，翻译结果为: {response_data}")
+        logger.info(f"成功调用 OpenAI API，翻译结果为: {response_data}")
 
         return response_data
 

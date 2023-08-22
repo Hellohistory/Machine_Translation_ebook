@@ -6,6 +6,9 @@ from ebook_parser.epub.epub_translator import EPUBTextTranslator
 from ebook_parser.epub.export import EPUBExtractor
 from ebook_parser.epub.extract import TextExtractor
 from translation_module.translation_service_selector import select_translation_service
+from config.logger_config import setup_logger
+
+logger = setup_logger()
 
 def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     # 定义文件路径
@@ -51,3 +54,4 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     epub_creator.create_new_epub()
 
     print("翻译完成！新的 EPUB 文件已创建。")
+    logger.info("翻译完成！新的 EPUB 文件已创建。")

@@ -1,10 +1,11 @@
-import logging
-from bs4 import BeautifulSoup
 import json
 import os
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from bs4 import BeautifulSoup
+
+from config.logger_config import setup_logger
+
+logger = setup_logger()
 
 class TextExtractor:
     def __init__(self, html_folder, json_output_path):

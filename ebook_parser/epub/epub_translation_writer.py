@@ -3,6 +3,9 @@
 import json
 import os
 from bs4 import BeautifulSoup
+from config.logger_config import setup_logger
+
+logger = setup_logger()
 
 class EPUBTranslationWriter:
     def __init__(self, json_input_path, html_folder):
@@ -10,6 +13,7 @@ class EPUBTranslationWriter:
         self.html_folder = html_folder
 
     def write_translated_text_to_html(self):
+        logger.info("开始写入翻译后的文本到 HTML")
         with open(self.json_input_path, 'r', encoding='utf-8') as json_file:
             translated_data = json.load(json_file)
 
@@ -32,16 +36,12 @@ class EPUBTranslationWriter:
             new_paragraph = BeautifulSoup(html_content, 'html.parser').p
             original_paragraph.replace_with(new_paragraph)
 
-
-            original_paragraph = soup.find_all('p')[p_index]
-            new_paragraph = BeautifulSoup(html_content, 'html.parser').p
-            original_paragraph.replace_with(new_paragraph)
-
-        for file_path, soup in updated_files.items():  # 将更新后的 HTML 内容写回文件
+        for file_path, soup in updated_files.items():
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(str(soup))
+            logger.info(f"已更新文件：{file_path}")
 
-        print(f"已将翻译后的文本写回 HTML 文件，保存在 {self.html_folder}")
+        logger.info(f"已将翻译后的文本写回 HTML 文件，保存在 {self.html_folder}")
 
 # 以下代码可用于测试
 # writer = EPUBTranslationWriter(json_input_path='translated_text.json', html_folder='output_folder')

@@ -1,8 +1,12 @@
-import logging
+# ebook_parser/epub/epub_creator.py
+
 from ebooklib import epub
 from lxml import etree
 import os
 
+from config.logger_config import setup_logger
+
+logger = setup_logger()
 
 class EPUBCreator:
     def __init__(self, epub_filename, translated_html_folder, new_epub_path):
@@ -11,7 +15,7 @@ class EPUBCreator:
         self.new_epub_path = new_epub_path
 
     def create_new_epub(self):
-        logging.info(f"开始创建新的 EPUB 文件: {self.new_epub_path}")
+        logger.info(f"开始创建新的 EPUB 文件: {self.new_epub_path}")
 
         # 读取原始 EPUB 文件
         book = epub.read_epub(self.epub_filename)
@@ -32,12 +36,12 @@ class EPUBCreator:
 
                     # 替换章节内容
                     item.set_content(translated_html_content_fixed)
-                    logging.info(f"替换章节 {chapter_name} 的内容")
+                    logger.info(f"替换章节 {chapter_name} 的内容")
 
         # 写入新的 EPUB 文件
         epub.write_epub(self.new_epub_path, book)
 
-        logging.info(f"新 EPUB 文件已创建在 {self.new_epub_path}")
+        logger.info(f"新 EPUB 文件已创建在 {self.new_epub_path}")
 
 # 以下代码可用于测试
 # creator = EPUBCreator(epub_filename='path/to/epub',
