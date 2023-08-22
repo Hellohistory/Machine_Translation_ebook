@@ -1,7 +1,9 @@
+# translation_module/translation_service_selector.py
+
 from config.settings import TranslationSettings
 from translation_module.Chinese import ChineseTranslator
 from translation_module.Youdao import YoudaoTranslator
-from translation_module.openai import OpenAITranslator
+from translation_module.Openai import OpenAITranslator
 
 """
 这个部分是用来调用服务商的接口，之前存在于input_module文件夹当中，现独立成为新模块

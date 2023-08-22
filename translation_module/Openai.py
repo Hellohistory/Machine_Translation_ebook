@@ -1,3 +1,5 @@
+# translation_module/Openai.py
+
 import json
 import openai
 import requests

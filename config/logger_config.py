@@ -6,10 +6,10 @@ def setup_logger():
     logger.setLevel(logging.INFO)  # 设置记录器的默认级别
 
     # 创建不同级别的处理器
-    debug_handler = logging.FileHandler('utils/logger/debug.log') # 调试日志
-    info_handler = logging.FileHandler('utils/logger/info.log') # 消息日志
-    warning_handler = logging.FileHandler('utils/logger/warning.log') # 警告日志
-    error_handler = logging.FileHandler('utils/logger/error.log') # 错误日志
+    debug_handler = logging.FileHandler('utils/logger/debug.log', encoding='utf-8') # 调试日志
+    info_handler = logging.FileHandler('utils/logger/info.log', encoding='utf-8') # 消息日志
+    warning_handler = logging.FileHandler('utils/logger/warning.log', encoding='utf-8') # 警告日志
+    error_handler = logging.FileHandler('utils/logger/error.log', encoding='utf-8') # 错误日志
 
     # 设置不同级别的处理器级别
     debug_handler.setLevel(logging.DEBUG)

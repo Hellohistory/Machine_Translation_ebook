@@ -8,7 +8,7 @@ from input_module.other import process_srt
 
 def main():
     # 获取用户输入
-    epub_filename = r"test file/pg53535.epub"
+    epub_filename = r"test file/测试文件_ENG.SRT"
     file_type = os.path.splitext(epub_filename)[1].lstrip('.').lower()
 
     supported_file_types = ['epub', 'srt']
