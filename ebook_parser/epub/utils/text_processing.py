@@ -1,8 +1,10 @@
 # text_processing.py
+from config.settings import TranslationSettings
+
 
 class TextTokenizer:
-    def __init__(self, max_tokens):
-        self.max_tokens = max_tokens
+    def __init__(self, model_name):
+        self.max_tokens = TranslationSettings.get_max_tokens_for_model(model_name)
 
     @staticmethod
     def estimate_tokens(text):
@@ -24,3 +26,4 @@ class TextTokenizer:
         if current_group:
             grouped_text.append(current_group)
         return grouped_text
+

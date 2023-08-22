@@ -1,8 +1,14 @@
 class TranslationSettings:
     # OpenAI的设置配置
     AVAILABLE_MODELS = [
-        "gpt-4", "gpt-4-0613", "gpt-4-32k", "gpt-3.5-turbo","gpt-3.5-turbo-16k","gpt-3.5-turbo-0613","gpt-3.5-turbo-16k-0613"
-        # 其他可用模型
+        "gpt-4",
+        "gpt-4-0613",
+        "gpt-4-32k",
+        "gpt-4-32k-0613",
+        "gpt-3.5-turbo",
+        "gpt-3.5-turbo-16k",
+        "gpt-3.5-turbo-0613",
+        "gpt-3.5-turbo-16k-0613"
     ]
 
     MAX_TOKENS_FOR_MODELS = {
@@ -16,7 +22,7 @@ class TranslationSettings:
         "gpt-3.5-turbo-16k-0613": 16384
     }
 
-    DEFAULT_MODEL = "gpt-3.5-turbo-0613"
+    DEFAULT_MODEL = "gpt-3.5-turbo-16k-0613"
     DEFAULT_PROMPT = "请将下面的文本从{source_lang}翻译为{target_lang}: {sentence}"
 
     # OpenAI的API密钥
@@ -51,7 +57,7 @@ class TranslationSettings:
 
     @staticmethod
     def get_max_tokens_for_model(model_name):
-        return TranslationSettings.MAX_TOKENS_FOR_MODELS.get(model_name, None)
+        return TranslationSettings.MAX_TOKENS_FOR_MODELS.get(model_name, 4096)  # 默认值为 4096
 
     @staticmethod
     def get_max_requests_per_minute():

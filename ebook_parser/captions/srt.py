@@ -25,6 +25,7 @@ class SRTTranslator:
         for group in text_groups:
             text_to_translate = ' '.join(group)
             translated_text = self.translator.translate(text_to_translate, source_lang, target_lang)
+            print("正在翻译的文本:",translated_text)
             translated_lines.extend(translated_text.split(' '))
 
         with open('translated.srt', 'w', encoding='utf-8') as out_file:
