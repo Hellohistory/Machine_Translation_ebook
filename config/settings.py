@@ -1,4 +1,5 @@
 class TranslationSettings:
+    # OpenAI的设置配置
     AVAILABLE_MODELS = [
         "gpt-4", "gpt-4-0613", "gpt-4-32k", "gpt-3.5-turbo","gpt-3.5-turbo-16k","gpt-3.5-turbo-0613","gpt-3.5-turbo-16k-0613"
         # 其他可用模型
@@ -21,11 +22,13 @@ class TranslationSettings:
     # OpenAI的API密钥
     OPENAI_API_KEY = ""
 
-    MAX_REQUESTS_PER_MINUTE = 50  # 你可以根据需要设置此值
+    # Openai的API一分钟内最大处理次数的设置
+    MAX_REQUESTS_PER_MINUTE = 50
 
     # OpenAI的API代理地址
     OPENAI_API_PROXY = "https://api.openai-proxy.com"  # 你可以在此设置代理URL，或者保留为None以便在其他地方进行配置
 
+    # 关于OpenAI的设置
     @staticmethod
     def get_api_key():
         return TranslationSettings.OPENAI_API_KEY
