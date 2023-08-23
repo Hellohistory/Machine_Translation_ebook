@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup, NavigableString
 
 from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
-from ebook_parser.epub.utils.text_processing import TextTokenizer
+from ebook_parser.epub.utils.text_token import TextTokenizer
 from config.logger_config import setup_logger
 
 logger = setup_logger()
