@@ -14,6 +14,7 @@ class TextExtractor:
 
     def extract_text_with_links_and_tags(self):
         text_data = []
+        global_idx = 0  # 全局计数器，确保每个 text_tag 的值都是唯一的
 
         # 遍历章节的 HTML 文件
         for html_file in os.listdir(self.html_folder):
@@ -27,15 +28,18 @@ class TextExtractor:
 
                         # 提取正文段落
                         paragraphs = soup.find_all('p')
-                        for idx, p in enumerate(paragraphs):
+                        for p in paragraphs:
                             # 创建标签
-                            tag = f"{html_file}_p{idx}"
+                            tag = f"{html_file}_p{global_idx}"
+                            text_tag = f"<tag{global_idx}>"  # 使用全局计数器创建 text_tag 字段
                             # 获取段落的 HTML 内容，保留链接
                             html_content = str(p)
                             text_data.append({
                                 'tag': tag,
+                                'text_tag': text_tag,  # 新增的 text_tag 字段
                                 'html_content': html_content
                             })
+                            global_idx += 1  # 更新全局计数器
                 except Exception as e:
                     logger.error(f"处理文件 {file_path} 时发生错误: {e}")
 
@@ -43,9 +47,10 @@ class TextExtractor:
         try:
             with open(self.json_output_path, 'w', encoding='utf-8') as json_file:
                 json.dump(text_data, json_file, ensure_ascii=False, indent=4)
-            logger.info(f"已将带有链接的文本提取并保存到 {self.json_output_path}")
+            logger.info(f"已将带有链接和文本标签的文本提取并保存到 {self.json_output_path}")
         except Exception as e:
             logger.error(f"保存JSON文件 {self.json_output_path} 时发生错误: {e}")
+
 
 # 以下代码可用于测试
 # extractor = TextExtractor(html_folder='output_folder', json_output_path='extracted_text.json')
