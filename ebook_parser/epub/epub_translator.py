@@ -41,13 +41,15 @@ class EPUBTextTranslator:
 
         logger.info(f"开始翻译，共有 {len(text_data)} 项文本")
         for item in text_data:
+            text_tag = item['text_tag']
             html_content = item['html_content']
 
             # 解析 HTML 内容
             soup = BeautifulSoup(html_content, 'html.parser')
 
-            # 获取所有文本节点
-            text_nodes = [text_node for text_node in soup.find_all(text=True) if isinstance(text_node, NavigableString) and text_node.strip()]
+            # 获取所有文本节点，并在每个文本节点前添加 text_tag
+            text_nodes = [text_tag + text_node for text_node in soup.find_all(text=True) if
+                          isinstance(text_node, NavigableString) and text_node.strip()]
 
             # 将文本节点组合为符合最大token限制的组
             text_groups = self.tokenizer.group_text_by_tokens(text_nodes)  # 使用 TextTokenizer 对象进行分组
