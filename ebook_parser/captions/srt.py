@@ -1,7 +1,7 @@
 # config/logger_config.py
 
 from translation_module.translation_interface import TranslationInterface
-from ebook_parser.epub.utils.text_token import TextTokenizer  # 导入新的 TextTokenizer 类
+from ebook_parser.epub.utils.openai_text_token import TextTokenizer  # 导入新的 TextTokenizer 类
 
 class SRTTranslator:
     def __init__(self, srt_file_path, translator: TranslationInterface, max_tokens_for_model):

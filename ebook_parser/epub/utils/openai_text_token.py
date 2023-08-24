@@ -1,15 +1,21 @@
-# text_token.py
+# openai_text_token.py
+
+"""
+这段代码采取的方法是调用openai官方的计算token的库“tiktoken”，首先使用这段代码来计算输入文本的token数量，与模型能够承受的最大token数进行比较
+如果超过模型能够承受的最大token数量，就删去分组里面的这一段，然后输入到翻译模块进行翻译，反之，没有超过则在分组当中再增加一段，这样既能兼顾API的承受
+能力，也能够使得句子的翻译不会被切断。
+"""
 
 import tiktoken
-from config.logger_config import setup_logger
+# from config.logger_config import setup_logger
 from config.settings import TranslationSettings
 
-logger = setup_logger()
+# logger = setup_logger()
 
 class TextTokenizer:
-    def __init__(self, model_name):
-        self.encoding_name = model_name
-        self.max_tokens = TranslationSettings.get_max_tokens_for_model(model_name)
+    def __init__(self):
+        self.encoding_name = TranslationSettings.get_default_model()
+        self.max_tokens = TranslationSettings.get_max_tokens_for_model(self.encoding_name)
         self.enc = tiktoken.encoding_for_model(self.encoding_name)
 
     def estimate_tokens(self, text):
@@ -21,22 +27,20 @@ class TextTokenizer:
         current_group = []
         current_tokens = 0
         for text in text_list:
-            text_tokens = self.estimate_tokens(text) # 调用已修改的实例方法
-            logger.info(f"处理文本: '{text[:30]}...', token 数量: {text_tokens}, 当前组 token 总数: {current_tokens}")
+            text_tokens = self.estimate_tokens(text)
+            # logger.info(f"处理文本: '{text[:30]}...', token 数量: {text_tokens}, 当前组 token 总数: {current_tokens}")
             if current_tokens + text_tokens <= self.max_tokens:
                 current_group.append(text)
                 current_tokens += text_tokens
             else:
-                logger.info(f"新组开始, 当前组 token 总数: {current_tokens}")
+                # logger.info(f"新组开始, 当前组 token 总数: {current_tokens}")
                 grouped_text.append(current_group)
                 current_group = [text]
                 current_tokens = text_tokens
         if current_group:
             grouped_text.append(current_group)
-        logger.info(f"分组完成, 总组数: {len(grouped_text)}")
+        # logger.info(f"分组完成, 总组数: {len(grouped_text)}")
         return grouped_text
-
-
 
 
 # import tiktoken

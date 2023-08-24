@@ -1,5 +1,13 @@
 # input_module/epub.py
 
+"""
+整个epub的翻译和保持源文件格式统一的方法如下：
+1.将输入epub进行拆分，将其内包含的HTML、css等内容输出到一个文件夹当中
+2.将文件夹内的HTML进行文本提取，这段文本提取会打上tag
+3.输入到组合模块进行组合，使其能够达到API的上限，一来是为了节约时间，二来是为了保证翻译的连续性
+4。翻译结束以后会写回到JSON当中，然后再根据tag写回到HTML当中，最后生成翻译后的HTML，替换掉原有epub文件的HTML，实现格式与翻译版本的结合
+"""
+
 from ebook_parser.epub.epub_creator import EPUBCreator
 from ebook_parser.epub.epub_translation_writer import EPUBTranslationWriter
 from ebook_parser.epub.epub_translator import EPUBTextTranslator
