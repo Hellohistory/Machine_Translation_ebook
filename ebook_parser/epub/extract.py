@@ -20,6 +20,7 @@ class TextExtractor:
 
         # 遍历章节的 HTML 文件
         for html_file in os.listdir(self.html_folder):
+            file_idx = 0  # 单独维护每个文件的索引计数器
             if html_file.endswith('.html') or html_file.endswith('.xhtml'):
                 file_path = os.path.join(self.html_folder, html_file)
 
@@ -32,7 +33,7 @@ class TextExtractor:
                         paragraphs = soup.find_all('p')
                         for p in paragraphs:
                             # 创建标签
-                            tag = f"{html_file}_p{global_idx}"
+                            tag = f"{html_file}_p{file_idx}"
                             text_tag = f"<tag{global_idx}>"  # 使用全局计数器创建 text_tag 字段
                             # 获取段落的 HTML 内容，保留链接
                             html_content = str(p)
@@ -41,6 +42,7 @@ class TextExtractor:
                                 'text_tag': text_tag,  # 新增的 text_tag 字段
                                 'html_content': html_content
                             })
+                            file_idx += 1  # 更新文件的索引计数器
                             global_idx += 1  # 更新全局计数器
                 except Exception as e:
                     logger.error(f"处理文件 {file_path} 时发生错误: {e}")
