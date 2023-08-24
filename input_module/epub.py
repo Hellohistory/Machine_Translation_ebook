@@ -34,8 +34,7 @@ def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     epub_translator = EPUBTextTranslator(
         json_input_path=json_input_path,
         json_output_path=json_output_path,
-        translator=translator_service,
-        max_tokens_for_model=max_tokens_for_model  # 在 EPUBTextTranslator 初始化时传递 max_tokens_for_model
+        translator=translator_service
     )
 
     # 执行 EPUB 解析、提取、翻译和创建流程

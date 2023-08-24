@@ -7,10 +7,10 @@
 """
 
 import tiktoken
-# from config.logger_config import setup_logger
+from config.logger_config import setup_logger
 from config.settings import TranslationSettings
 
-# logger = setup_logger()
+logger = setup_logger()
 
 class TextTokenizer:
     def __init__(self):
@@ -28,18 +28,18 @@ class TextTokenizer:
         current_tokens = 0
         for text in text_list:
             text_tokens = self.estimate_tokens(text)
-            # logger.info(f"处理文本: '{text[:30]}...', token 数量: {text_tokens}, 当前组 token 总数: {current_tokens}")
+            logger.info(f"处理文本: '{text[:30]}...', token 数量: {text_tokens}, 当前组 token 总数: {current_tokens}")
             if current_tokens + text_tokens <= self.max_tokens:
                 current_group.append(text)
                 current_tokens += text_tokens
             else:
-                # logger.info(f"新组开始, 当前组 token 总数: {current_tokens}")
+                logger.info(f"新组开始, 当前组 token 总数: {current_tokens}")
                 grouped_text.append(current_group)
                 current_group = [text]
                 current_tokens = text_tokens
         if current_group:
             grouped_text.append(current_group)
-        # logger.info(f"分组完成, 总组数: {len(grouped_text)}")
+        logger.info(f"分组完成, 总组数: {len(grouped_text)}")
         return grouped_text
 
 

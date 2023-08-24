@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup, NavigableString
 
 from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
-from ebook_parser.epub.utils.openai_text_token import TextTokenizer
+from ebook_parser.utils.openai_text_token import TextTokenizer
 from config.logger_config import setup_logger
 
 logger = setup_logger()
 
 class EPUBTextTranslator:
-    def __init__(self, json_input_path, json_output_path, translator: TranslationInterface, max_tokens_for_model):
+    def __init__(self, json_input_path, json_output_path, translator: TranslationInterface):
         self.json_input_path = json_input_path
         self.json_output_path = json_output_path
         self.translator = translator
