@@ -21,7 +21,7 @@ logger = setup_logger()
 def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     # 定义文件路径
     output_folder = 'Temporary Files\output_folder'
-    translated_html_folder = r'Temporary Files\translated_html_folder'
+    translated_html_folder = r'Temporary Files\output_folder'
     json_input_path = 'Temporary Files\extracted_text.json'
     json_output_path = r'Temporary Files\translated_text.json'
     new_epub_path = 'new_translated_book.epub'

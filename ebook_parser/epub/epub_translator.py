@@ -47,9 +47,12 @@ class EPUBTextTranslator:
             # 解析 HTML 内容
             soup = BeautifulSoup(html_content, 'html.parser')
 
-            # 获取所有文本节点，并在每个文本节点前添加 text_tag
-            text_nodes = [text_tag + text_node for text_node in soup.find_all(text=True) if
-                          isinstance(text_node, NavigableString) and text_node.strip()]
+            # 获取所有原始文本节点
+            original_text_nodes = [text_node for text_node in soup.find_all(text=True) if
+                                   isinstance(text_node, NavigableString) and text_node.strip()]
+
+            # 组合文本节点和 text_tag
+            text_nodes = [text_tag + str(text_node) for text_node in original_text_nodes]
 
             # 将文本节点组合为符合最大token限制的组
             text_groups = self.tokenizer.group_text_by_tokens(text_nodes)  # 使用 TextTokenizer 对象进行分组
@@ -70,19 +73,25 @@ class EPUBTextTranslator:
                 try:
                     translated_text = self.translator.translate(text_to_translate, source_lang, target_lang)
                     success_count += 1
-                    print("Translated sentence:", translated_text)  # 打印翻译后的句子
+                    # print("Translated sentence:", translated_text)  # 打印翻译后的句子
                 except Exception as e:  # 您可以替换为可能的具体异常类型
                     logger.error(f"翻译失败: {e}")
 
                 # 用翻译后的文本替换原始节点
-                for original_text_node, (start, end) in zip(group, positions):
-                    translated_part = translated_text[start:end]
+                for original_text_node, (start, end) in zip(original_text_nodes, positions):
+                    translated_part = NavigableString(translated_text[start:end].strip())
                     original_text_node.replace_with(translated_part)
+
+            # 替换text_tag中的尖括号为HTML实体
+            text_tag = text_tag.replace('<', '&lt;').replace('>', '&gt;')
+
+            # 然后进行替换操作
+            translated_html_content = str(soup).replace(text_tag, '')
 
             # 保存翻译后的 HTML 内容和标签
             translated_data.append({
                 'tag': item['tag'],
-                'html_content': str(soup)
+                'html_content': translated_html_content
             })
 
         # 将翻译后的文本和标签保存到新的 JSON 文件中

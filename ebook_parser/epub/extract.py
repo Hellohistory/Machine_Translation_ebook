@@ -2,7 +2,6 @@
 
 import json
 import os
-
 from bs4 import BeautifulSoup
 
 from config.logger_config import setup_logger
