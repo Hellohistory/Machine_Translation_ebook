@@ -3,12 +3,11 @@
 import os
 from input_module.epub import process_epub
 
-# 假设您已经定义了 process_srt 函数
 from input_module.other import process_srt
 
 def main():
     # 获取用户输入
-    epub_filename = r"test file/测试文件_ENG.SRT"
+    epub_filename = r"test file/pg53535.epub"
     file_type = os.path.splitext(epub_filename)[1].lstrip('.').lower()
 
     supported_file_types = ['epub', 'srt']
