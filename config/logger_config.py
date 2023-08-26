@@ -4,6 +4,8 @@ import shutil
 import zipfile
 from datetime import datetime
 
+from config.settings import TranslationSettings
+
 
 class LevelFilter(logging.Filter):
     def __init__(self, level):
@@ -43,10 +45,15 @@ def setup_logger():
     subfolders = [f for f in os.listdir(parent_folder) if os.path.isdir(os.path.join(parent_folder, f))]
     subfolders.sort()
 
+    # 创建一个归档文件夹用于存放压缩文件
+    archive_folder = 'utils/logger/archive'
+    os.makedirs(archive_folder, exist_ok=True)
+
+    # 将压缩文件移动到归档文件夹
     if len(subfolders) >= 3:
         oldest_folder = subfolders[0]
         oldest_folder_path = os.path.join(parent_folder, oldest_folder)
-        zip_file_path = os.path.join(parent_folder, f'{oldest_folder}.zip')
+        zip_file_path = os.path.join(archive_folder, f'{oldest_folder}.zip')  # 注意这里路径改为归档文件夹
 
         with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(oldest_folder_path):
@@ -54,6 +61,18 @@ def setup_logger():
                     zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), oldest_folder_path))
 
         shutil.rmtree(oldest_folder_path)
+
+    # 从 TranslationSettings 类的静态方法中读取最大日志压缩文件数量
+    max_log_archives = TranslationSettings.get_max_log_archives()
+
+    # 获取归档文件夹中所有的压缩日志文件
+    archive_zip_files = [f for f in os.listdir(archive_folder) if f.endswith('.zip')]
+    archive_zip_files.sort()
+
+    # 如果压缩日志文件数量超过最大限制，则删除最旧的
+    while len(archive_zip_files) > max_log_archives:
+        oldest_zip = archive_zip_files.pop(0)
+        os.remove(os.path.join(archive_folder, oldest_zip))
 
     return logger
 

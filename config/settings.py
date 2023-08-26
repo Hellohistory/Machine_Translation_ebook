@@ -34,6 +34,9 @@ class TranslationSettings:
     # OpenAI的API代理地址
     OPENAI_API_PROXY = "https://api.openai-proxy.com"  # 你可以在此设置代理URL，或者保留为None以便在其他地方进行配置
 
+    # 用于设置最大的压缩日志文件数量
+    MAX_LOG_ARCHIVES = 10
+
     # 关于OpenAI的设置
     @staticmethod
     def get_api_key():
@@ -62,3 +65,7 @@ class TranslationSettings:
     @staticmethod
     def get_max_requests_per_minute():
         return TranslationSettings.MAX_REQUESTS_PER_MINUTE
+
+    @staticmethod
+    def get_max_log_archives():
+        return TranslationSettings.MAX_LOG_ARCHIVES
