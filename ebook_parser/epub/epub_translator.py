@@ -1,15 +1,16 @@
 # ebook_parser/epub/epub_translator.py
 
 import json
+import logging
 import time
 from bs4 import BeautifulSoup, NavigableString
 
 from config.settings import TranslationSettings
-from translation_module.translation_interface import TranslationInterface
 from ebook_parser.utils.openai_text_token import TextTokenizer
-from config.logger_config import setup_logger
+from translation_module.translation_interface import TranslationInterface
 
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class EPUBTextTranslator:
     def __init__(self, json_input_path, json_output_path, translator: TranslationInterface):

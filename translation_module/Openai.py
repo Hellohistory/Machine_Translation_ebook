@@ -1,16 +1,18 @@
 # translation_module/Openai.py
 
 import json
+import logging
+
 import openai
 import requests
-from config.logger_config import setup_logger
 
 
 from config.settings import TranslationSettings
 from translation_module.translation_interface import TranslationInterface
 
 # 配置日志
-logger = setup_logger()
+logger = logging.getLogger()
+
 
 
 

@@ -1,11 +1,10 @@
 # ebook_parser/epub/export.py
-
+import logging
 import os
 from ebooklib import epub
 
-from config.logger_config import setup_logger
-
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class EPUBExtractor:
     def __init__(self, epub_filename, output_folder):

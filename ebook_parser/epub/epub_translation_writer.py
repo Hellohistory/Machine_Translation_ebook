@@ -1,11 +1,12 @@
 # ebook_parser/epub/epub_translation_writer.py
 
 import json
+import logging
 import os
 from bs4 import BeautifulSoup
-from config.logger_config import setup_logger
 
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class EPUBTranslationWriter:
     def __init__(self, json_input_path, html_folder):

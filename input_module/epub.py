@@ -7,6 +7,7 @@
 3.输入到组合模块进行组合，使其能够达到API的上限，一来是为了节约时间，二来是为了保证翻译的连续性
 4。翻译结束以后会写回到JSON当中，然后再根据tag写回到HTML当中，最后生成翻译后的HTML，替换掉原有epub文件的HTML，实现格式与翻译版本的结合
 """
+import logging
 
 from ebook_parser.epub.epub_creator import EPUBCreator
 from ebook_parser.epub.epub_translation_writer import EPUBTranslationWriter
@@ -14,9 +15,10 @@ from ebook_parser.epub.epub_translator import EPUBTextTranslator
 from ebook_parser.epub.export import EPUBExtractor
 from ebook_parser.epub.extract import TextExtractor
 from translation_module.translation_service_selector import select_translation_service
-from config.logger_config import setup_logger
 
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
+
 
 def process_epub(epub_filename, source_lang, target_lang, provider_choice):
     # 定义文件路径

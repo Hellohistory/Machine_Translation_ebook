@@ -1,12 +1,12 @@
 # ebook_parser/epub/extract.py
 
 import json
+import logging
 import os
 from bs4 import BeautifulSoup
 
-from config.logger_config import setup_logger
-
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class TextExtractor:
     def __init__(self, html_folder, json_output_path):

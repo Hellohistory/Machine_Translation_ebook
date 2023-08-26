@@ -1,12 +1,11 @@
 # ebook_parser/epub/epub_creator.py
-
+import logging
+import os
 from ebooklib import epub
 from lxml import etree
-import os
 
-from config.logger_config import setup_logger
-
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class EPUBCreator:
     def __init__(self, epub_filename, translated_html_folder, new_epub_path):

@@ -5,12 +5,13 @@
 如果超过模型能够承受的最大token数量，就删去分组里面的这一段，然后输入到翻译模块进行翻译，反之，没有超过则在分组当中再增加一段，这样既能兼顾API的承受
 能力，也能够使得句子的翻译不会被切断。
 """
-
+import logging
 import tiktoken
-from config.logger_config import setup_logger
+
 from config.settings import TranslationSettings
 
-logger = setup_logger()
+# 配置日志
+logger = logging.getLogger()
 
 class TextTokenizer:
     def __init__(self):
@@ -28,20 +29,17 @@ class TextTokenizer:
         current_tokens = 0
         for text in text_list:
             text_tokens = self.estimate_tokens(text)
-            logger.info(f"处理文本: '{text[:30]}...', token 数量: {text_tokens}, 当前组 token 总数: {current_tokens}")
-            if current_tokens + text_tokens <= self.max_tokens:
-                current_group.append(text)
-                current_tokens += text_tokens
-            else:
-                logger.info(f"新组开始, 当前组 token 总数: {current_tokens}")
+            if current_tokens + text_tokens > self.max_tokens:
                 grouped_text.append(current_group)
-                current_group = [text]
-                current_tokens = text_tokens
+                current_group = []
+                current_tokens = 0
+            current_group.append(text)
+            current_tokens += text_tokens
+
         if current_group:
             grouped_text.append(current_group)
         logger.info(f"分组完成, 总组数: {len(grouped_text)}")
         return grouped_text
-
 
 # import tiktoken
 #
