@@ -13,9 +13,7 @@ class LevelFilter(logging.Filter):
     def filter(self, record):
         return record.levelno == self.level
 
-
 def setup_logger():
-    print("Setting up logger.")
     logger = logging.getLogger()
     if logger.hasHandlers():
         logger.handlers.clear()
@@ -56,7 +54,6 @@ def setup_logger():
                     zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), oldest_folder_path))
 
         shutil.rmtree(oldest_folder_path)
-    print("Logger set up complete.")
 
     return logger
 
