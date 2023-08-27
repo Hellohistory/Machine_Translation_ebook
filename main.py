@@ -9,12 +9,6 @@ from input_module.other import process_srt
 # 配置日志
 logger = setup_logger()
 
-# 添加一些调试信息
-logger.debug("这是一个调试信息。")
-logger.info("这是一个信息。")
-logger.warning("这是一个警告信息。")
-logger.error("这是一个错误信息。")
-
 def main():
     # 获取用户输入
     epub_filename = r"test file/繁中调试文件.epub"
@@ -45,4 +39,10 @@ def main():
         process_srt(epub_filename, source_lang, target_lang, provider_choice)
 
 if __name__ == "__main__":
+    # 添加一些日志调试信息
+    logger.debug("调试信息")
+    logger.info("普通输出信息")
+    logger.warning("警告信息")
+    logger.error("错误信息")
+
     main()
